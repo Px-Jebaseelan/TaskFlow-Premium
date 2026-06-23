@@ -171,11 +171,18 @@ const Events = {
       }
       if (e.key === 'Escape') {
         const cp = document.getElementById('cmdPalette');
-        if (cp) cp.classList.add('hidden');
-        if (searchInput) {
-          searchInput.value = '';
-          State.filters.search = '';
-          Render.renderApp();
+        if (cp && !cp.classList.contains('hidden')) {
+          cp.classList.add('hidden');
+          if (searchInput) {
+            searchInput.value = '';
+            State.filters.search = '';
+            Render.renderApp();
+          }
+        } else if (document.body.classList.contains('focus-mode')) {
+          document.body.classList.remove('focus-mode');
+          const focusToggle = document.getElementById('focusToggle');
+          if (focusToggle) focusToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg> Zen Mode';
+          Toast.show('Zen Mode deactivated.');
         }
       }
     });
@@ -216,8 +223,11 @@ const Events = {
       focusToggle.addEventListener('click', () => {
         document.body.classList.toggle('focus-mode');
         const isActive = document.body.classList.contains('focus-mode');
-        focusToggle.textContent = isActive ? '🚪 Exit Focus' : '🧘 Focus';
-        Toast.show(isActive ? 'Zen Mode activated.' : 'Zen Mode deactivated.');
+        focusToggle.innerHTML = isActive 
+          ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h6v6"></path><path d="M20 10h-6V4"></path><path d="M14 10l7-7"></path><path d="M3 21l7-7"></path></svg> Exit Zen' 
+          : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg> Zen Mode';
+        
+        Toast.show(isActive ? 'Zen Mode activated. Press ESC to exit.' : 'Zen Mode deactivated.');
       });
     }
   },
