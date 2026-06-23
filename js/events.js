@@ -39,7 +39,7 @@ const Events = {
         btnMagicAdd.textContent = '✨...';
         
         const { cleanText, dueDate: nlpDate } = parseNLP(input.value);
-        const auto = await AI.autoCategorize(cleanText);
+        const auto = await GroqAI.autoCategorize(cleanText);
         
         let p = priority.value;
         let c = category.value;
@@ -82,7 +82,7 @@ const Events = {
           Render.renderInlineEdit(id, textDiv.textContent);
         }
       } else if (action === 'ai-breakdown') {
-        AI.breakdownTask(id);
+        GroqAI.breakdownTask(id);
       } else if (action === 'toggle-subtask') {
         const subIndex = parseInt(target.dataset.index, 10);
         const task = State.tasks.find(t => t.id === id);
@@ -170,10 +170,13 @@ const Events = {
         }
       }
       if (e.key === 'Escape') {
-        document.getElementById('cmdPalette').classList.add('hidden');
-        searchInput.value = '';
-        State.filters.search = '';
-        Render.renderApp();
+        const cp = document.getElementById('cmdPalette');
+        if (cp) cp.classList.add('hidden');
+        if (searchInput) {
+          searchInput.value = '';
+          State.filters.search = '';
+          Render.renderApp();
+        }
       }
     });
 
@@ -223,42 +226,46 @@ const Events = {
     const exportBtn = document.getElementById('exportBtn');
     const importInput = document.getElementById('importInput');
 
-    exportBtn.addEventListener('click', () => {
-      const dataStr = JSON.stringify(State.tasks, null, 2);
-      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      
-      const exportFileDefaultName = 'taskflow-backup.json';
-      
-      const linkElement = document.createElement('a');
-      linkElement.setAttribute('href', dataUri);
-      linkElement.setAttribute('download', exportFileDefaultName);
-      linkElement.click();
-      
-      Toast.show('Tasks exported successfully.');
-    });
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        const dataStr = JSON.stringify(State.tasks, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const exportFileDefaultName = 'taskflow-backup.json';
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+        
+        Toast.show('Tasks exported successfully.');
+      });
+    }
 
-    importInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+    if (importInput) {
+      importInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        try {
-          const importedTasks = JSON.parse(event.target.result);
-          if (Array.isArray(importedTasks)) {
-            State.tasks = importedTasks;
-            State.saveTasks(); // Will trigger render
-            Toast.show('Tasks imported successfully.');
-          } else {
-            throw new Error('Invalid format');
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const importedTasks = JSON.parse(event.target.result);
+            if (Array.isArray(importedTasks)) {
+              State.tasks = importedTasks;
+              State.saveTasks(); // Will trigger render
+              Toast.show('Tasks imported successfully.');
+            } else {
+              throw new Error('Invalid format');
+            }
+          } catch (err) {
+            Toast.show('Failed to import tasks. Invalid JSON.');
           }
-        } catch (err) {
-          Toast.show('Failed to import tasks. Invalid JSON.');
-        }
-      };
-      reader.readAsText(file);
-      // Reset input so same file can be selected again
-      e.target.value = '';
-    });
+        };
+        reader.readAsText(file);
+        // Reset input so same file can be selected again
+        e.target.value = '';
+      });
+    }
   }
 };
