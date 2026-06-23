@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow Premium</title>
+  <meta name="description" content="A professional, premium productivity workspace.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Command Palette Overlay -->
+  <div id="cmdPalette" class="cmd-palette hidden">
+    <div class="cmd-container">
+      <div class="cmd-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </div>
+      <input type="text" id="cmdInput" placeholder="Type a command or search... (Esc to close)">
+      <ul id="cmdResults" class="cmd-results"></ul>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-mark"></div>
+          <h1>TaskFlow</h1>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-group">
+          <h2 class="nav-title">Views</h2>
+          <button class="nav-item active chip" data-filter="all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            Inbox
+          </button>
+          <button class="nav-item chip" data-filter="active">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Pending
+          </button>
+          <button class="nav-item chip" data-filter="completed">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            Completed
+          </button>
+          <button class="nav-item chip" data-filter="overdue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            Overdue
+          </button>
+        </div>
+
+        <div class="nav-group">
+          <h2 class="nav-title">Categories</h2>
+          <div class="category-list">
+            <span class="category-dot cat-personal"></span> Personal<br>
+            <span class="category-dot cat-work"></span> Work<br>
+            <span class="category-dot cat-study"></span> Study<br>
+            <span class="category-dot cat-other"></span> Other
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="focusToggle" class="btn-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
+          Zen Mode
+        </button>
+        <button id="themeToggle" class="btn-text">
+          <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          Theme
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Canvas -->
+    <main class="main-canvas">
+      
+      <div class="top-bar">
+        <div class="search-hint" title="Press Ctrl+K">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span class="cmd-shortcut">Ctrl K</span> Search anything...
+          <!-- Hidden real search input for compatibility with events.js -->
+          <input type="text" id="searchInput" style="display:none;">
+          <div id="filterChips" style="display:none;"></div>
+        </div>
+        <div class="stats-mini">
+          <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <span id="completedCount">0</span>/<span id="totalCount">0</span>
+          <span id="pendingCount" style="display:none;">0</span>
+        </div>
+      </div>
+
+      <div class="canvas-content">
+        
+        <!-- Task Composer -->
+        <section class="task-composer">
+          <form id="taskForm" class="composer-form">
+            <div class="composer-main">
+              <input type="text" id="taskInput" placeholder="What needs to be done? e.g., Read report tomorrow" required autocomplete="off" aria-label="Task Description">
+              <button type="button" id="btnMagicAdd" class="btn-magic" title="AI Auto-Categorize">✨ AI Magic</button>
+            </div>
+            <div class="composer-meta">
+              <div class="meta-group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                <select id="taskPriority" aria-label="Priority">
+                  <option value="low">Low Priority</option>
+                  <option value="medium" selected>Medium Priority</option>
+                  <option value="high">High Priority</option>
+                </select>
+              </div>
+              <div class="meta-group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                <select id="taskCategory" aria-label="Category">
+                  <option value="personal">Personal</option>
+                  <option value="work">Work</option>
+                  <option value="study">Study</option>
+                  <option value="other" selected>Other</option>
+                </select>
+              </div>
+              <div class="meta-group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <input type="date" id="taskDueDate" aria-label="Due Date">
+              </div>
+              <div class="meta-group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                <select id="taskRecurring" aria-label="Recurring">
+                  <option value="none">Does not repeat</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              <button type="submit" class="btn-primary" title="Add Task manually">Add Task</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- View Controls -->
+        <div class="canvas-controls">
+          <h2 class="view-title">Tasks</h2>
+          <div class="control-actions">
+            <div class="view-toggles">
+              <button class="icon-btn active" data-view="list" title="List View">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+              </button>
+              <button class="icon-btn" data-view="board" title="Board View">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+              </button>
+            </div>
+            <div class="sort-box">
+              <select id="sortSelect" aria-label="Sort tasks">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="priority">Priority</option>
+                <option value="due-date">Due Date</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task List Container -->
+        <section class="main-content">
+          <div id="emptyState" class="empty-state hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <p>You're all caught up.</p>
+          </div>
+          
+          <ul id="taskList" class="task-list"></ul>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toastContainer" aria-live="polite" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/ai.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
